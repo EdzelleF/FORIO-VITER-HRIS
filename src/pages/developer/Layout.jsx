@@ -3,20 +3,18 @@ import Header from '../../partials/header';
 import Navigation from '../../partials/Navigation';
 import { navList } from '../nav-function';
 
-
 const Layout = ({ children, menu = "", submenu = "" }) => {
   return (
     <>
-      {/* HEADER */}
-      <Header  />
-
-      {/* NAVIGATION */}
+      <Header />
       <Navigation menu={menu} submenu={submenu} navigationList={navList} />
 
-      {/* BODY */}
-      {children}
-
-      {/* FOOTER */}
+      <main className="wrapper">
+        <div>
+          {children}
+        </div>
+        
+      </main>
     </>
   );
 };
