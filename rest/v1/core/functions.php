@@ -327,15 +327,6 @@ function getResultData($query)
     return $data;
 }
 
-// send response
-function sendResponse($result)
-{
-    $response = new Response();
-    $response->setSuccess(true);
-    $response->setStatusCode(200);
-    $response->setData($result);
-    $response->send();
-}
 
 // forbidden access
 function checkAccess()
