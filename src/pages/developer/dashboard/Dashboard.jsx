@@ -1,12 +1,10 @@
 import React from "react";
-import Layout from "../../layout";
-import RolesList from "./RolesList";
-import { StoreContext } from "../../../../store/StoreContext";
-import { setIsAdd } from "../../../../store/StoreAction";
 import { FaPlus } from "react-icons/fa";
-import ModalAddRoles from "./ModalAddRoles";
+import { StoreContext } from "../../../store/StoreContext";
+import { setIsAdd } from "../../../store/StoreAction";
+import Layout from "../layout";
 
-const Roles = () => {
+const Dashboard = () => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [itemEdit, setItemEdit] = React.useState(null);
 
@@ -14,18 +12,17 @@ const Roles = () => {
     dispatch(setIsAdd(true));
     setItemEdit(null);
   };
-
   return (
     <>
-      <Layout menu="settings" submenu="roles">
+      <Layout menu="settings">
         {/* Page Header */}
         <div className="flex items-center justify-between w-full">
-          <h1>Roles</h1>
+          <h1>Dashboard</h1>
           <div>
             <button
               type="button"
               className="flex items-center gap-1 hover:underline"
-              onClick={handleAdd}
+              //   onClick={handleAdd}
             >
               <FaPlus className="text-primary" />
               Add
@@ -34,13 +31,13 @@ const Roles = () => {
         </div>
         {/* Page Content */}
         <div>
-          <RolesList itemEdit={itemEdit} setItemEdit={setItemEdit} />
+          {/* <RolesList itemEdit={itemEdit} setItemEdit={setItemEdit} /> */}
         </div>
       </Layout>
 
-      {store.isAdd && <ModalAddRoles itemEdit={itemEdit} />}
+      {/* {store.isAdd && <ModalAddRoles itemEdit={itemEdit} />} */}
     </>
   );
 };
 
-export default Roles;
+export default Dashboard;

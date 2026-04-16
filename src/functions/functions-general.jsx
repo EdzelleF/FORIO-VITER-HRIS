@@ -1,3 +1,4 @@
+import React from "react";
 export const urlPath = "http://localhost/react-vite/viter-hris";
 export const devApiUrl = urlPath + "/rest";
 export const devNavUrl = "";
@@ -45,4 +46,24 @@ export const dateOptions = (format = "") => {
   }
 
   return options;
+};
+
+export const handleEscape = (handleClose) => {
+  React.useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.keyCode === 27) {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  });
+};
+
+// get focus on a button
+export const GetFocus = (id) => {
+  React.useEffect(() => {
+    const obj = document.getElementById(id);
+    obj.focus();
+  }, []);
 };

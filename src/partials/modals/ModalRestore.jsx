@@ -1,20 +1,29 @@
-import { queryData } from "@/components/custom-hooks/queryData";
-import {
-  handleEscape,
-  isEmptyItem,
-} from "@/components/helpers/functions-general";
+// import { queryData } from "@/components/custom-hooks/queryData";
+// import {
+//   handleEscape,
+//   isEmptyItem,
+// } from "@/components/helpers/functions-general";
+// import {
+//   setError,
+//   setIsRestore,
+//   setMessage,
+//   setSuccess,
+// } from "@/store/StoreAction";
+// import { StoreContext } from "@/store/StoreContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import { FaQuestion } from "react-icons/fa";
+import { queryData } from "../../functions/custom-hooks/queryData";
+import { handleEscape, isEmptyItem } from "../../functions/functions-general";
 import {
   setError,
   setIsRestore,
   setMessage,
   setSuccess,
-} from "@/store/StoreAction";
-import { StoreContext } from "@/store/StoreContext";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { FaQuestion } from "react-icons/fa";
-import ButtonSpinner from "../spinners/ButtonSpinner";
+} from "../../store/StoreAction";
+import { StoreContext } from "../../store/StoreContext";
 import MessageError from "../MessageError";
+import ButtonSpinner from "../spinners/ButtonSpinner";
 
 const ModalRestore = ({
   mysqlApiRestore,

@@ -18,6 +18,7 @@ import {
   InputTextArea,
 } from "../../../../components/form-input/FormInputs";
 import ButtonSpinner from "../../../../partials/spinners/ButtonSpinner";
+import MessageError from "../../../../partials/MessageError";
 
 const ModalAddRoles = ({ itemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
@@ -51,6 +52,7 @@ const ModalAddRoles = ({ itemEdit }) => {
   const initVal = {
     ...itemEdit,
     role_name: itemEdit ? itemEdit.role_name : "",
+    role_name_old: itemEdit ? itemEdit.role_name : "",
     role_description: itemEdit ? itemEdit.role_description : "",
   };
 
@@ -61,6 +63,10 @@ const ModalAddRoles = ({ itemEdit }) => {
   const handleClose = () => {
     dispatch(setIsAdd(false));
   };
+
+  React.useEffect(() => {
+    dispatch(setError(false));
+  }, []);
 
   return (
     <>
@@ -86,6 +92,7 @@ const ModalAddRoles = ({ itemEdit }) => {
             initialValues={initVal}
             validationSchema={yupSchema}
             onSubmit={async (values, { setSubmitting, resetForm }) => {
+              dispatch(setError(false));
               mutation.mutate(values);
             }}
           >
@@ -109,6 +116,8 @@ const ModalAddRoles = ({ itemEdit }) => {
                             disabled={mutation.isPending}
                           />
                         </div>
+
+                        {store.error && <MessageError />}
                       </div>
                     </div>
                     <div className="modal-action">
