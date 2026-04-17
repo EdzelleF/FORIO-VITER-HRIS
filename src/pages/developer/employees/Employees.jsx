@@ -3,6 +3,8 @@ import Layout from "../layout";
 import { FaPlus } from "react-icons/fa";
 import { StoreContext } from "../../../store/StoreContext";
 import EmployeesList from "./EmployeesList";
+import ModalAddEmployees from "./ModalAddEmployees";
+import { setIsAdd } from "../../../store/StoreAction";
 
 const Employees = () => {
   const { store, dispatch } = React.useContext(StoreContext);
@@ -22,7 +24,7 @@ const Employees = () => {
             <button
               type="button"
               className="flex items-center gap-1 hover:underline"
-              //   onClick={handleAdd}
+              onClick={handleAdd}
             >
               <FaPlus className="text-primary" />
               Add
@@ -35,7 +37,7 @@ const Employees = () => {
         </div>
       </Layout>
 
-      {/* {store.isAdd && <ModalAddRoles itemEdit={itemEdit} />} */}
+      {store.isAdd && <ModalAddEmployees itemEdit={itemEdit} />}
     </>
   );
 };
