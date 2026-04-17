@@ -8,13 +8,15 @@ import NoData from "../../../partials/NoData";
 import ServerError from "../../../partials/ServerError";
 import TableLoading from "../../../partials/TableLoading";
 import FetchingSpinner from "../../../partials/spinners/FetchingSpinner";
+import Loadmore from "../../../partials/Loadmore";
+import Status from "../../../partials/Status";
 
 const EmployeesList = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
 
   // page
   const [page, setPage] = React.useState(1);
-  const [filterData, setFilterData] = React.useState(null);
+  const [filterData, setFilterData] = React.useState("");
   const [onSearch, setOnSearch] = React.useState(false);
   const search = React.useRef({ value: "" });
   const { ref, inView } = useInView();
@@ -33,8 +35,8 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
     queryKey: ["employees", search.current.value, store.isSearch, filterData],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
-        `${apiVersion}/employees/search`, // search endpoint
-        `${apiVersion}/employees/page/${pageParam}`, // list endpoint
+        ``, // search endpoint
+        `${apiVersion}/controllers/developers/employees/page.php?start=${pageParam}`, // list endpoint
         false,
         {
           filterData,
@@ -91,8 +93,42 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
                 </td>
               </tr>
             )}
+            {result?.pages?.map((page, key) => (
+              <React.Fragment key={key}>
+                {page?.data?.map((item, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{counter++}</td>
+                      <td>
+                        <Status
+                          text={
+                            item.employee_is_active == 1 ? "Active" : "Inactive"
+                          }
+                        />
+                      </td>
+                      <td>
+                        {item.employee_first_name} {item.employee_last_name}
+                      </td>
+                      <td>{item.employee_email}</td>
+                    </tr>
+                  );
+                })}
+              </React.Fragment>
+            ))}
           </tbody>
         </table>
+        <div className="loadmore flex justify-center flex-col items-center pb-10">
+          <Loadmore
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+            result={result?.pages[0]}
+            setPage={setPage}
+            page={page}
+            refView={ref}
+            isSearchOrFilter={store.isSearch || result?.isFilter}
+          />
+        </div>
       </div>
     </>
   );
