@@ -2,6 +2,7 @@ import { devNavUrl, urlDeveloper } from "../functions/functions-general";
 import Dashboard from "../pages/developer/dashboard/Dashboard";
 import Employees from "../pages/developer/employees/Employees";
 import Roles from "../pages/developer/settings/roles/Roles";
+import Users from "../pages/developer/settings/users/USers";
 
 export const routesDeveloper = [
   {
@@ -33,6 +34,12 @@ export const routesDeveloper = [
     element: (
       <>
         <Roles />
+      </>
+    ),
+    path: `${devNavUrl}/${urlDeveloper}/settings/users`,
+    element: (
+      <>
+        <Users />
       </>
     ),
   },

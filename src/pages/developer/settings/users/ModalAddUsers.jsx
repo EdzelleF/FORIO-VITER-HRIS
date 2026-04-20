@@ -1,41 +1,43 @@
 import React from "react";
+import { StoreContext } from "../../../../store/StoreContext";
 import * as Yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FaTimes } from "react-icons/fa";
-import { StoreContext } from "../../../store/StoreContext";
-import { queryData } from "../../../functions/custom-hooks/queryData";
-import { apiVersion } from "../../../functions/functions-general";
+import { queryData } from "../../../../functions/custom-hooks/queryData";
+import { apiVersion } from "../../../../functions/functions-general";
 import {
   setError,
   setIsAdd,
   setMessage,
   setSuccess,
-} from "../../../store/StoreAction";
-import ModalWrapperSide from "../../../partials/modals/ModalWrapperSide";
-import { Formik } from "formik";
-import { Form } from "formik";
+} from "../../../../store/StoreAction";
+import ModalWrapperSide from "../../../../partials/modals/ModalWrapperSide";
+import { FaTimes } from "react-icons/fa";
+import { Form, Formik } from "formik";
 import {
+  InputSelect,
   InputText,
   InputTextArea,
-} from "../../../components/form-input/FormInputs";
-import ButtonSpinner from "../../../partials/spinners/ButtonSpinner";
-import MessageError from "../../../partials/MessageError";
+} from "../../../../components/form-input/FormInputs";
+import ButtonSpinner from "../../../../partials/spinners/ButtonSpinner";
+import MessageError from "../../../../partials/MessageError";
 
-const ModalAddEmployees = ({ itemEdit }) => {
+const ModalAddUsers = ({ itemEdit, filterArrayActiveRoles }) => {
   const { store, dispatch } = React.useContext(StoreContext);
+
+  console.log(filterArrayActiveRoles);
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (values) =>
       queryData(
         itemEdit
-          ? `${apiVersion}/controllers/developers/employees/employees.php?id=${itemEdit.employee_aid}`
-          : `${apiVersion}/controllers/developers/employees/employees.php`,
+          ? `${apiVersion}/controllers/developers/settings/users/users.php?id=${itemEdit.users_aid}`
+          : `${apiVersion}/controllers/developers/settings/users/users.php`,
         itemEdit ? "put" : "post",
         values,
       ),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
 
       if (data.success) {
         dispatch(setSuccess(true));
@@ -52,17 +54,19 @@ const ModalAddEmployees = ({ itemEdit }) => {
 
   const initVal = {
     ...itemEdit,
-    employee_first_name: itemEdit ? itemEdit.employee_first_name : "",
-    employee_last_name: itemEdit ? itemEdit.employee_last_name : "",
-    employee_first_name_old: itemEdit ? itemEdit.employee_first_name : "",
-    employee_last_name_old: itemEdit ? itemEdit.employee_last_name : "",
-    employee_email: itemEdit ? itemEdit.employee_email : "",
+    users_role_id: itemEdit ? itemEdit.users_role_id : "",
+    users_first_name: itemEdit ? itemEdit.users_first_name : "",
+    users_last_name: itemEdit ? itemEdit.users_last_name : "",
+    users_password: itemEdit ? itemEdit.users_password : "",
+    users_email: itemEdit ? itemEdit.users_email : "",
+    users_email_old: itemEdit ? itemEdit.users_email : "",
   };
 
   const yupSchema = Yup.object({
-    employee_first_name: Yup.string().trim().required("required."),
-    employee_last_name: Yup.string().trim().required("required."),
-    employee_email: Yup.string()
+    users_role_id: Yup.string().trim().required("required."),
+    users_first_name: Yup.string().trim().required("required."),
+    users_last_name: Yup.string().trim().required("required."),
+    users_email: Yup.string()
       .trim()
       .email("Invalid email")
       .required("required."),
@@ -84,7 +88,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
       >
         <div className="modal-header relative mb-4">
           <h3 className="text-dark text-sm">
-            {itemEdit ? "Update" : "Add"} Employee
+            {itemEdit ? "Update" : "Add"} Users
           </h3>
           <button
             type="button"
@@ -112,37 +116,55 @@ const ModalAddEmployees = ({ itemEdit }) => {
                       <div className="relative mb-6">
                         <InputText
                           label="First Name"
-                          name="employee_first_name"
+                          name="users_first_name"
                           type="text"
                           disabled={mutation.isPending}
                         />
-                        <div className="relative mt-6">
-                          <InputText
-                            label="Middle Name"
-                            name="employee_middle_name"
-                            type="text"
-                            disabled={mutation.isPending}
-                          />
-                        </div>
-                        <div className="relative mt-6">
-                          <InputText
-                            label="Last Name"
-                            name="employee_last_name"
-                            type="text"
-                            disabled={mutation.isPending}
-                          />
-                        </div>
-                        <div className="relative mt-6">
-                          <InputText
-                            label="Email"
-                            name="employee_email"
-                            type="email"
-                            disabled={mutation.isPending}
-                          />
-                        </div>
-                        {store.error && <MessageError />}
                       </div>
+
+                      <div className="relative mt-5 mb-6">
+                        <InputText
+                          label="Last Name"
+                          name="users_last_name"
+                          type="text"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mt-5 mb-6">
+                        <InputText
+                          label="Email"
+                          name="users_email"
+                          type="text"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mt-5 mb-6">
+                        <InputSelect
+                          label="Role"
+                          name="users_role_id"
+                          type="text"
+                          disabled={mutation.isPending}
+                        >
+                          <optgroup label="Select a Role">
+                            <option value="" hidden>
+                              --
+                            </option>
+                            {filterArrayActiveRoles.map((item, key) => {
+                              return (
+                                <option key={key} value={item.role_aid}>
+                                  {item.role_name}
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                        </InputSelect>
+                      </div>
+
+                      {store.error && <MessageError />}
                     </div>
+
                     <div className="modal-action">
                       <button
                         type="submit"
@@ -177,4 +199,4 @@ const ModalAddEmployees = ({ itemEdit }) => {
   );
 };
 
-export default ModalAddEmployees;
+export default ModalAddUsers;

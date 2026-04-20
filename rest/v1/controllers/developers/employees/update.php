@@ -4,22 +4,24 @@ $conn = null;
 $conn = checkDbConnection($conn);
 // make use of classes
 
-$val = new Roles($conn);
+$val = new Employees($conn);
 
 if(array_key_exists("id",$_GET)){
-    $val->role_aid = $_GET['id'];
-    $val->role_name = $data['role_name'];
-    $val->role_description = $data['role_description'];
-    $val->role_updated = date("Y-m-d H:m:s");
+    $val->employee_aid = $_GET['id'];
+    $val->employee_first_name = $data['employee_first_name'];
+    $val->employee_middle_name = $data['employee_middle_name'];
+    $val->employee_last_name = $data['employee_last_name'];
+    $val->employee_email = $data['employee_email'];
+    $val->employee_updated = date("Y-m-d H:m:s");
 
-    $role_name_old = $data['role_name_old'];
+    $employee_first_name_old = $data['employee_first_name_old'];
 
-    checkId($val->role_aid);
-    compareName($val, $role_name_old, $val->role_name);
+    checkId($val->employee_aid);
+    compareName($val, $employee_first_name_old, $val->employee_first_name);
 
     $query = checkUpdate($val);
     http_response_code(200);
-    returnSuccess($val, "Roles Update", $query);
+    returnSuccess($val, "Employees Update", $query);
 }
 
 checkEndpoint();

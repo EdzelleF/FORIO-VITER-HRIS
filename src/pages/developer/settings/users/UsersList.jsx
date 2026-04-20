@@ -1,28 +1,32 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
-import { queryDataInfinite } from "../../../functions/custom-hooks/queryDataInfinite";
-import { apiVersion } from "../../../functions/functions-general";
-import { StoreContext } from "../../../store/StoreContext";
-import { useInView } from "react-intersection-observer";
-import NoData from "../../../partials/NoData";
-import ServerError from "../../../partials/ServerError";
-import TableLoading from "../../../partials/TableLoading";
-import FetchingSpinner from "../../../partials/spinners/FetchingSpinner";
-import Loadmore from "../../../partials/Loadmore";
+import useQueryData from "../../../../functions/custom-hooks/useQueryData";
+import {
+  apiVersion,
+  formatDate,
+} from "../../../../functions/functions-general";
+import NoData from "../../../../partials/NoData";
+import FetchingSpinner from "../../../../partials/spinners/FetchingSpinner";
+import TableLoading from "../../../../partials/TableLoading";
 import { FaArchive, FaEdit, FaTrash, FaTrashRestore } from "react-icons/fa";
+import { StoreContext } from "../../../../store/StoreContext";
 import {
   setIsAdd,
   setIsArchive,
   setIsDelete,
   setIsRestore,
-} from "../../../store/StoreAction";
-import ModalArchive from "../../../partials/modals/ModalArchive";
-import ModalRestore from "../../../partials/modals/ModalRestore";
-import ModalDelete from "../../../partials/modals/ModalDelete";
-import Status from "../../../partials/Status";
-import SearchBar from "../../../partials/SearchBar";
+} from "../../../../store/StoreAction";
+import Status from "../../../../partials/Status";
+import ModalArchive from "../../../../partials/modals/ModalArchive";
+import ModalRestore from "../../../../partials/modals/ModalRestore";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { queryDataInfinite } from "../../../../functions/custom-hooks/queryDataInfinite";
+import ServerError from "../../../../partials/ServerError";
+import SearchBar from "../../../../partials/SearchBar";
+import Loadmore from "../../../../partials/Loadmore";
+import ModalDelete from "../../../../partials/modals/ModalDelete";
 
-const EmployeesList = ({ itemEdit, setItemEdit }) => {
+const UsersList = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
 
   const handleEdit = (item) => {
@@ -61,11 +65,11 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["employees", search.current.value, store.isSearch, filterData],
+    queryKey: ["users", search.current.value, store.isSearch, filterData],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         ``,
-        `${apiVersion}/controllers/developers/employees/page.php?start=${pageParam}`,
+        `${apiVersion}/controllers/developers/settings/users/page.php?start=${pageParam}`,
         false,
         {
           filterData,
@@ -88,7 +92,7 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
       setPage((prev) => prev + 1);
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [inView]);
 
   return (
     <>
@@ -102,7 +106,7 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
-          </select> 
+          </select>
         </div>
         <SearchBar
           search={search}
@@ -123,8 +127,11 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
             <tr>
               <th>#</th>
               <th>Status</th>
-              <th>Employee Name</th>
+              <th>Name</th>
               <th>Email</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Updated</th>
               <th></th>
             </tr>
           </thead>
@@ -161,20 +168,26 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
                       <td>
                         <Status
                           text={
-                            item.employee_is_active == 1 ? "active" : "inactive"
+                            item.users_is_active == 1 ? "active" : "inactive"
                           }
                         />
                       </td>
 
                       <td>
-                        {item.employee_first_name} {item.employee_last_name}
+                        {item.users_first_name} {item.users_last_name}
                       </td>
 
-                      <td>{item.employee_email}</td>
+                      <td>{item.users_email}</td>
+
+                      <td>{item.role_name}</td>
+
+                      <td>{formatDate(item.users_created)}</td>
+
+                      <td>{formatDate(item.users_updated)}</td>
 
                       <td>
                         <div className="flex items-center gap-3">
-                          {item.employee_is_active == 1 ? (
+                          {item.users_is_active == 1 ? (
                             <>
                               <button
                                 type="button"
@@ -241,38 +254,38 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
 
       {store.isArchive && itemEdit && (
         <ModalArchive
-          mysqlApiArchive={`${apiVersion}/controllers/developers/employees/active.php?id=${itemEdit.employee_aid}`}
+          mysqlApiArchive={`${apiVersion}/controllers/developers/settings/users/active.php?id=${itemEdit.users_aid}`}
           msg="Are you sure you want to archive this record?"
           successMsg="Successfully archived."
-          item={`${itemEdit.employee_first_name} ${itemEdit.employee_last_name}`}
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="users"
         />
       )}
 
       {store.isRestore && itemEdit && (
         <ModalRestore
-          mysqlApiRestore={`${apiVersion}/controllers/developers/employees/active.php?id=${itemEdit.employee_aid}`}
+          mysqlApiRestore={`${apiVersion}/controllers/developers/settings/users/active.php?id=${itemEdit.users_aid}`}
           msg="Are you sure you want to restore this record?"
           successMsg="Successfully restored."
-          item={`${itemEdit.employee_first_name} ${itemEdit.employee_last_name}`}
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="users"
         />
       )}
 
       {store.isDelete && itemEdit && (
         <ModalDelete
-          mysqlApiDelete={`${apiVersion}/controllers/developers/employees/employees.php?id=${itemEdit.employee_aid}`}
+          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/users/delete.php?id=${itemEdit.users_aid}`}
           msg="Are you sure you want to delete this record?"
           successMsg="Successfully deleted."
-          item={`${itemEdit.employee_first_name} ${itemEdit.employee_last_name}`}
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="users"
         />
       )}
     </>
   );
 };
 
-export default EmployeesList;
+export default UsersList;

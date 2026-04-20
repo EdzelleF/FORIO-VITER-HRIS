@@ -15,8 +15,8 @@ $val = new Employees($conn);
 $body = file_get_contents("php://input");
 $data = json_decode($body, true);
 
-
-if(array_key_exists('start',$_GET)){
+if(isset($_SERVER['HTTP_AUTHORIZATION'])){
+    if(array_key_exists('start',$_GET)){
     // check data if exist and data is required
     checkPayLoad($data);
     $val->start = $_GET['start'];
@@ -36,6 +36,7 @@ if(array_key_exists('start',$_GET)){
         $val->total,
         $val->start,
     );
+}
 }
 
 // return 404 if endpoint not available
