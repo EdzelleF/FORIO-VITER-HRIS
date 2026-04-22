@@ -276,7 +276,7 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
 
       {store.isDelete && itemEdit && (
         <ModalDelete
-          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/users/delete.php?id=${itemEdit.users_aid}`}
+          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/users/users.php?id=${itemEdit.users_aid}`}
           msg="Are you sure you want to delete this record?"
           successMsg="Successfully deleted."
           item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}

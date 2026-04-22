@@ -1,5 +1,5 @@
 import { MdDashboard } from "react-icons/md";
-import { FaCogs, FaUsers } from "react-icons/fa";
+import { FaCogs, FaUsers, FaStickyNote } from "react-icons/fa";
 import { devNavUrl, urlDeveloper } from "../functions/functions-general";
 
 export const navList = [
@@ -18,6 +18,13 @@ export const navList = [
     submenu: "",
   },
   {
+    label: "Memo",
+    icon: <FaStickyNote />,
+    menu: "memo",
+    path: `${devNavUrl}/${urlDeveloper}/memo`,
+    submenu: "",
+  },
+  {
     label: "Settings",
     icon: <FaCogs />,
     menu: "settings",
@@ -28,7 +35,7 @@ export const navList = [
         path: `${devNavUrl}/${urlDeveloper}/settings/roles`,
       },
       {
-        label: "users",
+        label: "Users",
         path: `${devNavUrl}/${urlDeveloper}/settings/users`,
       },
     ],
