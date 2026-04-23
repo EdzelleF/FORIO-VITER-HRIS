@@ -12,19 +12,32 @@ import {
   setSuccess,
 } from "../../../store/StoreAction";
 import ModalWrapperSide from "../../../partials/modals/ModalWrapperSide";
-import { Formik } from "formik";
-import { Form } from "formik";
+import { Formik, Form } from "formik";
 import {
   InputText,
-  InputTextArea,
+  InputSelect,
 } from "../../../components/form-input/FormInputs";
 import ButtonSpinner from "../../../partials/spinners/ButtonSpinner";
 import MessageError from "../../../partials/MessageError";
+import useQueryData from "../../../functions/custom-hooks/useQueryData";
 
 const ModalAddEmployees = ({ itemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
 
   const queryClient = useQueryClient();
+
+  const { isLoading: isLoadingDepartment, data: departmentData } = useQueryData(
+    `${apiVersion}/controllers/developers/settings/department/page.php?start=0`,
+    "post",
+    "department-active",
+    {
+      filterData: "1",
+      searchValue: "",
+    },
+  );
+
+  const filterArrayActiveDepartment = departmentData?.data ?? [];
+
   const mutation = useMutation({
     mutationFn: (values) =>
       queryData(
@@ -34,8 +47,8 @@ const ModalAddEmployees = ({ itemEdit }) => {
         itemEdit ? "put" : "post",
         values,
       ),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ["employees"] });
 
       if (data.success) {
         dispatch(setSuccess(true));
@@ -53,10 +66,12 @@ const ModalAddEmployees = ({ itemEdit }) => {
   const initVal = {
     ...itemEdit,
     employee_first_name: itemEdit ? itemEdit.employee_first_name : "",
+    employee_middle_name: itemEdit ? itemEdit.employee_middle_name : "",
     employee_last_name: itemEdit ? itemEdit.employee_last_name : "",
     employee_first_name_old: itemEdit ? itemEdit.employee_first_name : "",
     employee_last_name_old: itemEdit ? itemEdit.employee_last_name : "",
     employee_email: itemEdit ? itemEdit.employee_email : "",
+    employee_department_id: itemEdit ? itemEdit.employee_department_id : "",
   };
 
   const yupSchema = Yup.object({
@@ -66,6 +81,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
       .trim()
       .email("Invalid email")
       .required("required."),
+    employee_department_id: Yup.string().trim().required("required."),
   });
 
   const handleClose = () => {
@@ -74,7 +90,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
 
   React.useEffect(() => {
     dispatch(setError(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -97,9 +113,10 @@ const ModalAddEmployees = ({ itemEdit }) => {
 
         <div className="modal-body">
           <Formik
+            enableReinitialize
             initialValues={initVal}
             validationSchema={yupSchema}
-            onSubmit={async (values, { setSubmitting, resetForm }) => {
+            onSubmit={async (values) => {
               dispatch(setError(false));
               mutation.mutate(values);
             }}
@@ -116,6 +133,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
                           type="text"
                           disabled={mutation.isPending}
                         />
+
                         <div className="relative mt-6">
                           <InputText
                             label="Middle Name"
@@ -124,6 +142,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
                             disabled={mutation.isPending}
                           />
                         </div>
+
                         <div className="relative mt-6">
                           <InputText
                             label="Last Name"
@@ -132,6 +151,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
                             disabled={mutation.isPending}
                           />
                         </div>
+
                         <div className="relative mt-6">
                           <InputText
                             label="Email"
@@ -140,9 +160,33 @@ const ModalAddEmployees = ({ itemEdit }) => {
                             disabled={mutation.isPending}
                           />
                         </div>
+
+                        <div className="relative mt-6">
+                          <InputSelect
+                            label="Department"
+                            name="employee_department_id"
+                            type="text"
+                            disabled={mutation.isPending || isLoadingDepartment}
+                          >
+                            <optgroup label="Select a Department">
+                              <option value="" hidden>
+                                --
+                              </option>
+                              {filterArrayActiveDepartment.map((item, key) => {
+                                return (
+                                  <option value={item.department_aid} key={key}>
+                                    {item.department_name}
+                                  </option>
+                                );
+                              })}
+                            </optgroup>
+                          </InputSelect>
+                        </div>
+
                         {store.error && <MessageError />}
                       </div>
                     </div>
+
                     <div className="modal-action">
                       <button
                         type="submit"
@@ -157,6 +201,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
                           "Add"
                         )}
                       </button>
+
                       <button
                         type="reset"
                         className="btn-modal-cancel"
